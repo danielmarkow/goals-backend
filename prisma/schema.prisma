@@ -14,15 +14,15 @@ model User {
   id Int @id @default(autoincrement())
   email String
   password String
-  goals Goal[]
+  // goals Goal[]
   createdAt DateTime @default(now()) @db.Timestamp(3)
   updatedAt DateTime @updatedAt @db.Timestamp(3)
 }
 
 model Goal {
   id Int @id @default(autoincrement())
-  author User @relation(fields: [authorId], references: [id])
-  authorId Int
+  // author User? @relation(fields: [authorId], references: [id])
+  // authorId Int?
   goaltext String
   createdAt DateTime @default(now()) @db.Timestamp(3)
   updatedAt DateTime @updatedAt @db.Timestamp(3)
