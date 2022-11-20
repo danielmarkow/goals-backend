@@ -5,7 +5,9 @@ const { prisma } = require("../config/db");
 // @route   GET /api/goals
 // @access  Private
 const getGoals = asyncHandler(async (req, res) => {
-  const goals = await prisma.goal.findMany();
+  const goals = await prisma.goal.findMany({
+    where: { authorId: req.user.id },
+  });
   res.status(200).json(goals);
 });
 
@@ -20,6 +22,7 @@ const setGoals = asyncHandler(async (req, res) => {
   const goal = await prisma.goal.create({
     data: {
       goaltext: req.body.text,
+      authorId: req.user.id,
     },
   });
   res.status(200).json(goal);
@@ -29,7 +32,27 @@ const setGoals = asyncHandler(async (req, res) => {
 // @route   PUT /api/goals/:id
 // @access  Private
 const updateGoal = asyncHandler(async (req, res) => {
-  const goalId = Number(req.params.id);
+  const goalId = req.params.id;
+
+  const goal = await prisma.goal.findFirst({
+    where: { id: goalId },
+  });
+
+  const user = await prisma.user.findFirst({
+    where: { id: req.user.id },
+  });
+
+  if (!user) {
+    res.status(401);
+    throw new Error("User not found");
+  }
+
+  // make sure the login user matches the goal user
+  if (goal.authorId !== user.id) {
+    res.status(401);
+    throw new Error("User not authorized");
+  }
+
   try {
     const updatedGoal = await prisma.goal.update({
       where: { id: goalId },
@@ -46,14 +69,34 @@ const updateGoal = asyncHandler(async (req, res) => {
 // @route   DELETE /api/goals/:id
 // @access  Private
 const deleteGoal = asyncHandler(async (req, res) => {
-  const goalId = Number(req.params.id);
+  const goalId = req.params.id;
+
+  const goal = await prisma.goal.findFirst({
+    where: { id: req.params.id },
+  });
+
+  const user = await prisma.user.findFirst({
+    where: { id: req.user.id },
+  });
+
+  if (!user) {
+    res.status(401);
+    throw new Error("User not found");
+  }
+
+  // make sure the login user matches the goal user
+  if (goal.authorId !== user.id) {
+    res.status(401);
+    throw new Error("User not authorized");
+  }
+
   try {
-    const goal = await prisma.goal.delete({
+    const deletedGoal = await prisma.goal.delete({
       where: {
         id: goalId,
       },
     });
-    res.status(200).json(goal);
+    res.status(200).json(deletedGoal);
   } catch (error) {
     res.status(400);
     throw error;
