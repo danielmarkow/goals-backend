@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx prisma init --datasource-provider postgresql && npx prisma migrate dev --name init && node server.js"
+    "start": "npx prisma migrate dev --name init && node server.js"
   },
   "keywords": [],
   "author": "",
