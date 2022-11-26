@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npx prisma init --datasource-provider postgresql && npx prisma migrate dev --name init && node server.js"
   },
   "keywords": [],
   "author": "",
