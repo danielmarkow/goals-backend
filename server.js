@@ -11,6 +11,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 if (process.env.NODE_ENV === "development") {
   app.use(cors());
+} else {
+  app.use(
+    cors({
+      origin: process.env.FRONTEND_URL,
+    })
+  );
 }
 
 app.use("/api/goals", require("./routes/goalRoutes"));
